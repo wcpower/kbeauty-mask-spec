@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crown Rainbow Face Mask — Spec Explained (STE)</title>
+<style>
+:root {
+  --bg: #0a0e1a;
+  --card: #111827;
+  --border: #1e293b;
+  --text: #e2e8f0;
+  --dim: #64748b;
+  --accent: #3b82f6;
+  --accent2: #8b5cf6;
+  --green: #10b981;
+  --red: #ef4444;
+  --amber: #f59e0b;
+  --cyan: #06b6d4;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; background:var(--bg); color:var(--text); line-height:1.7; }
+
+/* ── hero ── */
+.hero {
+  text-align:center; padding:60px 20px 40px;
+  background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);
+  border-bottom:1px solid var(--border);
+}
+.hero h1 { font-size:clamp(1.6rem,4vw,2.8rem); font-weight:800; letter-spacing:-0.03em;
+  background:linear-gradient(135deg,#60a5fa,#a78bfa,#34d399); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.hero .sub { color:var(--dim); font-size:1.1rem; margin-top:8px; }
+.hero .badge { display:inline-block; background:rgba(59,130,246,.15); color:var(--accent); padding:4px 14px; border-radius:20px; font-size:.82rem; margin-top:14px; border:1px solid rgba(59,130,246,.3); }
+
+/* ── ste banner ── */
+.ste-banner {
+  max-width:900px; margin:30px auto 0; padding:18px 24px; border-radius:14px;
+  background:rgba(139,92,246,.1); border:1px solid rgba(139,92,246,.25);
+}
+.ste-banner h3 { color:var(--accent2); font-size:.95rem; margin-bottom:6px; }
+.ste-banner p { color:var(--dim); font-size:.88rem; }
+.ste-rules { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+.ste-rules span { background:rgba(139,92,246,.15); color:var(--accent2); padding:3px 10px; border-radius:12px; font-size:.78rem; }
+
+/* ── container ── */
+.container { max-width:1100px; margin:0 auto; padding:0 20px 60px; }
+
+/* ── section ── */
+.section { margin-top:48px; }
+.section-title { font-size:1.35rem; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+.section-title .num { background:var(--accent); color:#fff; width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:.9rem; flex-shrink:0; }
+
+/* ── card grid ── */
+.grid { display:grid; gap:16px; }
+.grid-2 { grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); }
+.grid-3 { grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+.grid-4 { grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); }
+
+.card {
+  background:var(--card); border:1px solid var(--border); border-radius:16px;
+  padding:22px; transition:transform .2s,box-shadow .2s;
+}
+.card:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,0,0,.3); }
+.card h4 { font-size:.85rem; color:var(--dim); text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
+.card .big { font-size:2.2rem; font-weight:800; letter-spacing:-0.03em; }
+.card .unit { font-size:.95rem; color:var(--dim); font-weight:400; }
+.card .note { font-size:.82rem; color:var(--dim); margin-top:8px; }
+
+/* ── spec table ── */
+.spec-table { width:100%; border-collapse:collapse; margin-top:12px; }
+.spec-table th { text-align:left; color:var(--dim); font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; padding:10px 14px; border-bottom:1px solid var(--border); }
+.spec-table td { padding:12px 14px; border-bottom:1px solid rgba(255,255,255,.04); font-size:.92rem; }
+.spec-table tr:hover td { background:rgba(59,130,246,.05); }
+.spec-table .label { color:var(--dim); font-size:.85rem; }
+.spec-table .val { font-weight:600; }
+.spec-table .ste { color:var(--cyan); font-size:.82rem; margin-top:2px; }
+
+/* ── dose calculator ── */
+.calc-box { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px; }
+.calc-row { display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end; margin-bottom:20px; }
+.calc-group { flex:1; min-width:140px; }
+.calc-group label { display:block; font-size:.82rem; color:var(--dim); margin-bottom:6px; text-transform:uppercase; letter-spacing:.05em; }
+.calc-group input[type=range] { width:100%; accent-color:var(--accent); height:6px; border-radius:3px; }
+.calc-group .val-display { font-size:1.6rem; font-weight:700; color:var(--accent); margin-top:4px; }
+.calc-result {
+  background:rgba(59,130,246,.08); border:1px solid rgba(59,130,246,.2);
+  border-radius:12px; padding:20px; text-align:center;
+}
+.calc-result .dose { font-size:3rem; font-weight:800; letter-spacing:-0.03em; }
+.calc-result .dose-label { color:var(--dim); font-size:.9rem; }
+.calc-verdict { margin-top:12px; padding:10px 18px; border-radius:10px; display:inline-block; font-weight:600; font-size:.95rem; }
+.calc-verdict.good { background:rgba(16,185,129,.15); color:var(--green); border:1px solid rgba(16,185,129,.3); }
+.calc-verdict.low { background:rgba(245,158,11,.15); color:var(--amber); border:1px solid rgba(245,158,11,.3); }
+.calc-verdict.high { background:rgba(239,68,68,.15); color:var(--red); border:1px solid rgba(239,68,68,.3); }
+
+/* ── wavelength chart ── */
+.wave-chart { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px; }
+.wave-bar { display:flex; align-items:center; gap:14px; margin:12px 0; }
+.wave-label { width:110px; text-align:right; font-size:.88rem; color:var(--dim); flex-shrink:0; }
+.wave-track { flex:1; height:32px; background:rgba(255,255,255,.05); border-radius:8px; overflow:hidden; position:relative; }
+.wave-fill { height:100%; border-radius:8px; display:flex; align-items:center; padding-left:12px; font-size:.82rem; font-weight:600; color:#fff; transition:width 1s ease; }
+.wave-val { width:80px; text-align:left; font-size:.88rem; font-weight:600; flex-shrink:0; }
+
+/* ── comparison ── */
+.compare-table { width:100%; border-collapse:collapse; }
+.compare-table th { padding:12px; text-align:center; font-size:.82rem; text-transform:uppercase; letter-spacing:.05em; border-bottom:2px solid var(--border); }
+.compare-table th:first-child { text-align:left; }
+.compare-table td { padding:12px; text-align:center; font-size:.92rem; border-bottom:1px solid rgba(255,255,255,.04); }
+.compare-table td:first-child { text-align:left; color:var(--dim); }
+.compare-table .winner { color:var(--green); font-weight:700; }
+.compare-table .loser { color:var(--red); }
+.compare-table .highlight-col { background:rgba(59,130,246,.08); border-radius:8px 8px 0 0; }
+
+/* ── anatomy diagram ── */
+.anatomy { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:28px; text-align:center; }
+.anatomy svg { max-width:100%; height:auto; }
+.anatomy-legend { display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin-top:18px; }
+.anatomy-legend .item { display:flex; align-items:center; gap:6px; font-size:.82rem; color:var(--dim); }
+.anatomy-legend .dot { width:12px; height:12px; border-radius:50%; }
+
+/* ── ste callout ── */
+.ste-callout {
+  background:rgba(6,182,212,.08); border-left:3px solid var(--cyan);
+  border-radius:0 12px 12px 0; padding:16px 20px; margin:16px 0;
+}
+.ste-callout .ste-text { color:var(--cyan); font-size:.92rem; font-style:italic; }
+.ste-callout .normal { color:var(--dim); font-size:.85rem; margin-top:6px; }
+
+/* ── interactive tooltip ── */
+.tooltip-trigger { border-bottom:1px dashed var(--accent); cursor:help; position:relative; }
+.tooltip-trigger:hover::after {
+  content:attr(data-tip); position:absolute; bottom:100%; left:50%; transform:translateX(-50%);
+  background:#1e293b; color:var(--text); padding:8px 14px; border-radius:8px; font-size:.82rem;
+  white-space:nowrap; z-index:10; box-shadow:0 4px 20px rgba(0,0,0,.4); pointer-events:none;
+}
+
+/* ── tabs ── */
+.tab-bar { display:flex; gap:4px; margin-bottom:20px; background:rgba(255,255,255,.04); border-radius:12px; padding:4px; }
+.tab-btn { flex:1; padding:10px 16px; border:none; background:transparent; color:var(--dim); font-size:.88rem; font-weight:600; border-radius:10px; cursor:pointer; transition:all .2s; }
+.tab-btn.active { background:var(--accent); color:#fff; }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* ── footer ── */
+.footer { text-align:center; padding:30px; color:var(--dim); font-size:.82rem; border-top:1px solid var(--border); margin-top:40px; }
+
+@media (max-width:640px) {
+  .wave-label { width:70px; font-size:.78rem; }
+  .wave-val { width:60px; font-size:.78rem; }
+  .calc-row { flex-direction:column; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Crown Rainbow Face Mask</h1>
+  <p class="sub">R71 from Hayssa Quotation CNHS20261019SC-003 · Spec Explained</p>
+  <div class="badge">ASD-STE100 Simplified Technical English</div>
+</div>
+
+<div class="ste-banner">
+  <h3>📘 What is ASD-STE100?</h3>
+  <p>ASD-STE100 is a standard for technical writing. It uses short words and short sentences. It removes confusion. Every spec below is written in this style first. The normal English explanation follows.</p>
+  <div class="ste-rules">
+    <span>Max 20 words per sentence</span>
+    <span>Active voice only</span>
+    <span>Present tense</span>
+    <span>One instruction per sentence</span>
+    <span>Approved dictionary words</span>
+    <span>No jargon without definition</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ═══ SECTION 1: THE NUMBERS ═══ -->
+  <div class="section">
+    <div class="section-title"><div class="num">1</div> The Four Numbers That Matter</div>
+    <div class="grid grid-4">
+      <div class="card" style="text-align:center">
+        <h4>LED Chips</h4>
+        <div class="big" style="color:var(--accent)">82</div>
+        <div class="note">The mask has 82 small lights. Each light gives out one colour of light.</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <h4>Energy at Skin</h4>
+        <div class="big" style="color:var(--green)">38</div>
+        <div class="unit">mW per cm²</div>
+        <div class="note">This is the power of light on your skin. Higher is better for treatment.</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <h4>Light Colours</h4>
+        <div class="big" style="color:var(--accent2)">7</div>
+        <div class="note">The mask gives 7 colours of light. Three colours do real work. Four are mixes.</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <h4>Session Time</h4>
+        <div class="big" style="color:var(--amber)">20</div>
+        <div class="unit">minutes</div>
+        <div class="note">The battery lasts 20 minutes. This is enough for one session.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 2: DOSE CALCULATOR ═══ -->
+  <div class="section">
+    <div class="section-title"><div class="num">2</div> Dose Calculator — See Why 38 mW/cm² Wins</div>
+
+    <div class="ste-callout">
+      <div class="ste-text">STE: The dose is the amount of light energy on your skin. The dose = power × time. The unit is joules per square centimetre (J/cm²).</div>
+      <div class="normal">Normal: Dose is the total light energy your skin receives. It equals irradiance multiplied by time. The unit is J/cm².</div>
+    </div>
+
+    <div class="calc-box">
+      <div class="calc-row">
+        <div class="calc-group">
+          <label>Irradiance (mW/cm²)</label>
+          <input type="range" id="irr" min="5" max="50" value="38" step="1">
+          <div class="val-display"><span id="irrVal">38</span> mW/cm²</div>
+        </div>
+        <div class="calc-group">
+          <label>Session Time (minutes)</label>
+          <input type="range" id="time" min="1" max="30" value="10" step="1">
+          <div class="val-display"><span id="timeVal">10</span> min</div>
+        </div>
+      </div>
+
+      <div class="calc-result">
+        <div class="dose-label">Light dose on your skin</div>
+        <div class="dose" id="doseOut">22.8</div>
+        <div class="dose-label">joules per cm²</div>
+        <div class="calc-verdict good" id="verdict">✓ Therapeutic range (12–37 J/cm² for acne)</div>
+      </div>
+
+      <div style="margin-top:20px; font-size:.85rem; color:var(--dim); text-align:center;">
+        Drag the sliders to compare. The <strong style="color:var(--green)">green band</strong> (12–37 J/cm²) is the therapeutic window from clinical studies.
+        The <strong style="color:var(--red)">red band</strong> is below the threshold — the light does not work.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 3: FULL SPEC TABLE ═══ -->
+  <div class="section">
+    <div class="section-title"><div class="num">3</div> Full Specification — STE + Normal English</div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="showTab('spec-table')">Specification Table</button>
+      <button class="tab-btn" onclick="showTab('spec-anatomy')">Product Diagram</button>
+      <button class="tab-btn" onclick="showTab('spec-compare')">Compare with 15 mW/cm²</button>
+    </div>
+
+    <!-- TAB: Spec Table -->
+    <div class="tab-content active" id="spec-table">
+      <div class="card" style="overflow-x:auto">
+        <table class="spec-table">
+          <thead><tr><th>Parameter</th><th>Value</th><th>STE Explanation</th></tr></thead>
+          <tbody>
+            <tr><td class="label">Product name</td><td class="val">Crown Rainbow Face Mask</td><td class="ste">STE: This is a face mask. It gives light treatment to the skin.</td></tr>
+            <tr><td class="label">Model</td><td class="val">皇冠七彩面膜仪 (Item #23)</td><td class="ste">STE: The model number is 23. This is item 23 in the Hayssa list.</td></tr>
+            <tr><td class="label">LED chips</td><td class="val">82 chips · 248 beams per mode</td><td class="ste">STE: There are 82 lights in the mask. Each light sends 3 beams. So you get 248 beams in each mode.</td></tr>
+            <tr><td class="label">Energy density</td><td class="val" style="color:var(--green)">38 mW/cm²</td><td class="ste">STE: The mask gives 38 milliwatts of light on each square centimetre of skin. This is the power of the light.</td></tr>
+            <tr><td class="label">Wavelengths</td><td class="val">460 / 525 / 630 nm (+ 4 combos)</td><td class="ste">STE: The mask gives light at 3 main wavelengths. 460 nm is blue. 525 nm is green. 630 nm is red. The other 4 colours are mixes of these 3.</td></tr>
+            <tr><td class="label">Material</td><td class="val">Food-grade silicone</td><td class="ste">STE: The mask is made of silicone. This material is safe for skin. It is soft and bends to fit your face.</td></tr>
+            <tr><td class="label">Battery</td><td class="val">1000 mAh · 3.7V</td><td class="ste">STE: The battery stores 1000 milliamp-hours. This gives you 20 minutes of use. Charge the battery before each session.</td></tr>
+            <tr><td class="label">Working time</td><td class="val">~20 minutes</td><td class="ste">STE: Use the mask for 20 minutes. Then the battery is empty. Charge it again.</td></tr>
+            <tr><td class="label">Dimensions</td><td class="val">287 × 175 × 30 mm</td><td class="ste">STE: The mask is 287 mm wide. It is 175 mm tall. It is 30 mm thick.</td></tr>
+            <tr><td class="label">Weight</td><td class="val">150 g</td><td class="ste">STE: The mask weighs 150 grams. This is light. You can wear it easily.</td></tr>
+            <tr><td class="label">Accessories</td><td class="val">Controller, cable, strap, eye mask, manual</td><td class="ste">STE: The box has 6 items: the mask, a controller, a charging cable, a strap to hold the mask, an eye mask, and a user manual.</td></tr>
+            <tr><td class="label">Unit price</td><td class="val" style="color:var(--amber)">US$11.94 (~RM49)</td><td class="ste">STE: The price is 11.94 US dollars per unit. This is the factory price. It is not the retail price.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: Anatomy -->
+    <div class="tab-content" id="spec-anatomy">
+      <div class="anatomy">
+        <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+          <!-- face outline -->
+          <ellipse cx="400" cy="200" rx="160" ry="190" fill="none" stroke="#334155" stroke-width="2"/>
+          <ellipse cx="400" cy="200" rx="150" ry="180" fill="rgba(59,130,246,.06)"/>
+
+          <!-- LED grid - face area -->
+          <g id="leds">
+            <!-- row 1 -->
+            <circle cx="340" cy="100" r="7" fill="#ef4444" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/></circle>
+            <circle cx="400" cy="95" r="7" fill="#22c55e" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="2.1s" repeatCount="indefinite"/></circle>
+            <circle cx="460" cy="100" r="7" fill="#3b82f6" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="1.9s" repeatCount="indefinite"/></circle>
+            <!-- row 2 -->
+            <circle cx="310" cy="145" r="7" fill="#22c55e" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="2.2s" repeatCount="indefinite"/></circle>
+            <circle cx="370" cy="140" r="7" fill="#3b82f6" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="1.8s" repeatCount="indefinite"/></circle>
+            <circle cx="430" cy="140" r="7" fill="#ef4444" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="2.3s" repeatCount="indefinite"/></circle>
+            <circle cx="490" cy="145" r="7" fill="#22c55e" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/></circle>
+            <!-- row 3 -->
+            <circle cx="295" cy="195" r="7" fill="#3b82f6" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="2.4s" repeatCount="indefinite"/></circle>
+            <circle cx="355" cy="190" r="7" fill="#ef4444" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="1.7s" repeatCount="indefinite"/></circle>
+            <circle cx="445" cy="190" r="7" fill="#22c55e" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="2.1s" repeatCount="indefinite"/></circle>
+            <circle cx="505" cy="195" r="7" fill="#3b82f6" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="2.5s" repeatCount="indefinite"/></circle>
+            <!-- row 4 -->
+            <circle cx="310" cy="245" r="7" fill="#ef4444" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="2.2s" repeatCount="indefinite"/></circle>
+            <circle cx="370" cy="240" r="7" fill="#22c55e" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="1.9s" repeatCount="indefinite"/></circle>
+            <circle cx="430" cy="240" r="7" fill="#3b82f6" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="2.3s" repeatCount="indefinite"/></circle>
+            <circle cx="490" cy="245" r="7" fill="#ef4444" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/></circle>
+            <!-- row 5 -->
+            <circle cx="340" cy="290" r="7" fill="#22c55e" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="2.4s" repeatCount="indefinite"/></circle>
+            <circle cx="400" cy="295" r="7" fill="#3b82f6" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="1.8s" repeatCount="indefinite"/></circle>
+            <circle cx="460" cy="290" r="7" fill="#ef4444" opacity=".9"><animate attributeName="opacity" values="0.4;1;0.4" dur="2.1s" repeatCount="indefinite"/></circle>
+          </g>
+
+          <!-- labels -->
+          <text x="400" y="370" text-anchor="middle" fill="#64748b" font-size="13">82 LED chips in total (showing 19 representative positions)</text>
+
+          <!-- irradiance arrow -->
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#10b981"/>
+            </marker>
+          </defs>
+          <line x1="620" y1="180" x2="560" y2="200" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)"/>
+          <text x="630" y="175" fill="#10b981" font-size="14" font-weight="600">38 mW/cm²</text>
+          <text x="630" y="195" fill="#64748b" font-size="11">at skin surface</text>
+
+          <!-- silicone label -->
+          <line x1="180" y1="300" x2="260" y2="250" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrowhead)"/>
+          <text x="80" y="310" fill="#8b5cf6" font-size="13" font-weight="600">Food-grade silicone</text>
+          <text x="80" y="328" fill="#64748b" font-size="11">Bends to fit your face</text>
+        </svg>
+
+        <div class="anatomy-legend">
+          <div class="item"><div class="dot" style="background:#ef4444"></div> Red (630nm) — Collagen, anti-aging</div>
+          <div class="item"><div class="dot" style="background:#22c55e"></div> Green (525nm) — Calming, pigmentation</div>
+          <div class="item"><div class="dot" style="background:#3b82f6"></div> Blue (460nm) — Kills acne bacteria</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Compare -->
+    <div class="tab-content" id="spec-compare">
+      <div class="card">
+        <h4 style="margin-bottom:16px">Crown Rainbow (R71) vs Seven-Color Mirrored (R62) — Same Price, Different Power</h4>
+        <table class="compare-table">
+          <thead>
+            <tr><th>Feature</th><th class="highlight-col">R71 Crown Rainbow<br><span style="color:var(--green);font-size:.75rem">38 mW/cm² · Silicone</span></th><th>R62 Mirrored<br><span style="color:var(--amber);font-size:.75rem">15 mW/cm² · ABS</span></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>LED chips</td><td>82</td><td>90</td></tr>
+            <tr><td>Irradiance</td><td class="winner">38 mW/cm²</td><td class="loser">15 mW/cm²</td></tr>
+            <tr><td>Dose in 10 min</td><td class="winner">22.8 J/cm²</td><td class="loser">9.0 J/cm²</td></tr>
+            <tr><td>Therapeutic?</td><td class="winner">✓ Yes (12–37 range)</td><td class="loser">✗ Below threshold</td></tr>
+            <tr><td>Material</td><td class="winner">Food-grade silicone</td><td class="loser">ABS plastic</td></tr>
+            <tr><td>Fit</td><td class="winner">Bends to face shape</td><td class="loser">Rigid, gaps on some faces</td></tr>
+            <tr><td>Weight</td><td class="winner">150 g</td><td>280 g</td></tr>
+            <tr><td>Battery</td><td>1000 mAh</td><td class="winner">1200 mAh</td></tr>
+            <tr><td>Working time</td><td>~20 min</td><td class="winner">~60 min</td></tr>
+            <tr><td>Unit price</td><td>US$11.94</td><td>US$11.94</td></tr>
+            <tr><td style="font-weight:700">Verdict</td><td class="winner" style="font-size:1.1rem">Best value for treatment</td><td class="loser" style="font-size:1.1rem">Longer battery, weaker light</td></tr>
+          </tbody>
+        </table>
+        <div class="ste-callout" style="margin-top:20px">
+          <div class="ste-text">STE: The Crown Rainbow gives 2.5× more light power than the Mirrored mask. Both cost the same. The Crown Rainbow is the better choice for treatment.</div>
+          <div class="normal">Normal: The Crown Rainbow delivers 2.5× more irradiance at the same price. If you want therapeutic results, the Crown Rainbow is the clear winner.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 4: WAVELENGTHS ═══ -->
+  <div class="section">
+    <div class="section-title"><div class="num">4</div> The 7 Colours — What Each One Does</div>
+
+    <div class="ste-callout">
+      <div class="ste-text">STE: The mask gives 7 colours of light. Only 3 colours do real work. The other 4 are mixes of the 3.</div>
+      <div class="normal">Normal: The mask emits 7 light modes. Three are primary wavelengths with known biological effects. The other four are combinations of these three.</div>
+    </div>
+
+    <div class="wave-chart">
+      <div class="wave-bar">
+        <div class="wave-label">Red (630nm)</div>
+        <div class="wave-track"><div class="wave-fill" style="width:85%;background:linear-gradient(90deg,#dc2626,#ef4444)">Collagen production</div></div>
+        <div class="wave-val" style="color:var(--green)">Strong</div>
+      </div>
+      <div class="wave-bar">
+        <div class="wave-label">Blue (460nm)</div>
+        <div class="wave-track"><div class="wave-fill" style="width:80%;background:linear-gradient(90deg,#2563eb,#3b82f6)">Kills acne bacteria</div></div>
+        <div class="wave-val" style="color:var(--green)">Strong</div>
+      </div>
+      <div class="wave-bar">
+        <div class="wave-label">Green (525nm)</div>
+        <div class="wave-track"><div class="wave-fill" style="width:55%;background:linear-gradient(90deg,#16a34a,#22c55e)">Calming, pigmentation</div></div>
+        <div class="wave-val" style="color:var(--amber)">Moderate</div>
+      </div>
+      <div class="wave-bar">
+        <div class="wave-label">Purple</div>
+        <div class="wave-track"><div class="wave-fill" style="width:40%;background:linear-gradient(90deg,#7c3aed,#a78bfa)">Red + Blue mix</div></div>
+        <div class="wave-val" style="color:var(--dim)">Combo</div>
+      </div>
+      <div class="wave-bar">
+        <div class="wave-label">Yellow</div>
+        <div class="wave-track"><div class="wave-fill" style="width:35%;background:linear-gradient(90deg,#d97706,#f59e0b)">Red + Green mix</div></div>
+        <div class="wave-val" style="color:var(--dim)">Combo</div>
+      </div>
+      <div class="wave-bar">
+        <div class="wave-label">Cyan</div>
+        <div class="wave-track"><div class="wave-fill" style="width:35%;background:linear-gradient(90deg,#0891b2,#06b6d4)">Green + Blue mix</div></div>
+        <div class="wave-val" style="color:var(--dim)">Combo</div>
+      </div>
+      <div class="wave-bar">
+        <div class="wave-label">White</div>
+        <div class="wave-track"><div class="wave-fill" style="width:50%;background:linear-gradient(90deg,#e2e8f0,#f8fafc);color:#1e293b">All three mixed</div></div>
+        <div class="wave-val" style="color:var(--dim)">Combo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 5: SILICONE vs ABS ═══ -->
+  <div class="section">
+    <div class="section-title"><div class="num">5</div> Why Silicone Matters — The Fit Problem</div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h4 style="color:var(--green)">✓ Silicone (Crown Rainbow)</h4>
+        <svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg" style="margin:12px 0">
+          <!-- flexible mask shape -->
+          <path d="M60,40 Q150,20 240,40 Q250,90 240,140 Q150,160 60,140 Q50,90 60,40Z" fill="rgba(16,185,129,.15)" stroke="#10b981" stroke-width="2"/>
+          <!-- skin line -->
+          <path d="M70,55 Q150,35 230,55 Q235,90 230,125 Q150,145 70,125 Q65,90 70,55Z" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="4"/>
+          <text x="150" y="95" text-anchor="middle" fill="#10b981" font-size="12" font-weight="600">Uniform distance</text>
+          <text x="150" y="112" text-anchor="middle" fill="#64748b" font-size="10">Light hits skin evenly</text>
+          <!-- arrows showing even pressure -->
+          <line x1="100" y1="50" x2="100" y2="70" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <line x1="150" y1="45" x2="150" y2="65" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+          <line x1="200" y1="50" x2="200" y2="70" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+        </svg>
+        <div class="ste-callout">
+          <div class="ste-text">STE: The silicone bends to the shape of your face. The distance from light to skin is the same everywhere. This gives equal dose on all areas.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 style="color:var(--red)">✗ ABS Plastic (Mirrored Mask)</h4>
+        <svg viewBox="0 0 300 180" xmlns="http://www.w3.org/2000/svg" style="margin:12px 0">
+          <!-- rigid mask -->
+          <rect x="60" y="35" width="180" height="110" rx="20" fill="rgba(239,68,68,.1)" stroke="#ef4444" stroke-width="2"/>
+          <!-- curved skin -->
+          <path d="M65,60 Q150,25 235,60 Q240,90 235,120 Q150,155 65,120 Q60,90 65,60Z" fill="none" stroke="#64748b" stroke-width="1" stroke-dasharray="4"/>
+          <!-- gap indicators -->
+          <circle cx="85" cy="55" r="4" fill="#ef4444" opacity=".5"/>
+          <circle cx="215" cy="55" r="4" fill="#ef4444" opacity=".5"/>
+          <circle cx="85" cy="125" r="4" fill="#ef4444" opacity=".5"/>
+          <circle cx="215" cy="125" r="4" fill="#ef4444" opacity=".5"/>
+          <text x="150" y="95" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="600">Gaps at edges</text>
+          <text x="150" y="112" text-anchor="middle" fill="#64748b" font-size="10">Less light at cheeks and jaw</text>
+        </svg>
+        <div class="ste-callout">
+          <div class="ste-text">STE: The ABS mask is hard. It does not bend. The distance from light to skin changes. Some areas get less dose. Some areas get no dose.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION 6: KEY TAKEAWAY ═══ -->
+  <div class="section">
+    <div class="section-title"><div class="num">6</div> The Bottom Line — STE Summary</div>
+    <div class="card" style="border-left:4px solid var(--green)">
+      <div class="ste-callout" style="margin:0">
+        <div class="ste-text">
+          STE Summary:<br><br>
+          1. The Crown Rainbow mask has 82 lights. It gives 38 mW per cm² of light.<br>
+          2. This gives a dose of 22.8 J/cm² in 10 minutes. This is in the therapeutic range.<br>
+          3. The silicone material bends to your face. This gives equal light on all skin areas.<br>
+          4. The 3 main colours are red (630 nm), green (525 nm), and blue (460 nm).<br>
+          5. The price is US$11.94 per unit. This is the factory price.<br>
+          6. The 38 mW/cm² spec is 2.5× more powerful than the 15 mW/cm² masks at the same price.<br><br>
+          <strong>Conclusion: This mask is the best value for LED light treatment in the Hayssa range.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Source: Hayssa Proforma Invoice CNHS20261019SC-003 (Oct 20, 2026) + Catalog pages P23–P30 · Built with ASD-STE100 principles
+</div>
+
+<script>
+// ── Dose Calculator ──
+const irr = document.getElementById('irr');
+const time = document.getElementById('time');
+const irrVal = document.getElementById('irrVal');
+const timeVal = document.getElementById('timeVal');
+const doseOut = document.getElementById('doseOut');
+const verdict = document.getElementById('verdict');
+
+function updateCalc() {
+  const i = parseFloat(irr.value);
+  const t = parseFloat(time.value);
+  const dose = (i * t * 60) / 1000; // mW × seconds / 1000 = J
+  irrVal.textContent = i;
+  timeVal.textContent = t;
+  doseOut.textContent = dose.toFixed(1);
+
+  if (dose < 12) {
+    doseOut.style.color = '#f59e0b';
+    verdict.className = 'calc-verdict low';
+    verdict.textContent = '⚠ Below therapeutic threshold (need 12+ J/cm²)';
+  } else if (dose <= 37) {
+    doseOut.style.color = '#10b981';
+    verdict.className = 'calc-verdict good';
+    verdict.textContent = '✓ Therapeutic range (12–37 J/cm² for acne)';
+  } else if (dose <= 60) {
+    doseOut.style.color = '#3b82f6';
+    verdict.className = 'calc-verdict good';
+    verdict.textContent = '✓ High therapeutic range (37–60 J/cm² for anti-aging)';
+  } else {
+    doseOut.style.color = '#ef4444';
+    verdict.className = 'calc-verdict high';
+    verdict.textContent = '✗ Too high — may cause skin stress';
+  }
+}
+irr.addEventListener('input', updateCalc);
+time.addEventListener('input', updateCalc);
+updateCalc();
+
+// ── Tab Switcher ──
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── Animate wave bars on scroll ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.wave-fill').forEach(bar => {
+        bar.style.width = bar.style.width; // trigger animation
+      });
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.wave-chart').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
